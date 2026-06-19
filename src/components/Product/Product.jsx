@@ -5,7 +5,7 @@ const Product = ({ product }) => {
 
   return (
     // 1. Add 'flex flex-col' and 'h-full' to the parent card
-    <div className="p-6 text-left border border-gray-200 rounded-lg flex flex-col h-full hover:shadow-xl">
+    <div className="p-6 text-left bg-white border border-gray-200 rounded-lg flex flex-col h-full hover:shadow-xl">
       <img
         className="h-75.5 w-full mb-4 rounded-md hover:shadow-lg"
         src={image}

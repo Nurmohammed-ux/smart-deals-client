@@ -1,11 +1,13 @@
 import { useContext, useState } from "react";
-import { Link } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { AuthContext } from "../../contexts/AuthContext";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Login = () => {
   const { signInWithGoogle, signInUser } = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -17,6 +19,7 @@ const Login = () => {
     signInUser(email, password)
       .then((result) => {
         console.log(result);
+        navigate(location?.state || "/");
       })
       .catch((error) => console.log(error.message));
   };
@@ -25,6 +28,7 @@ const Login = () => {
     signInWithGoogle()
       .then((result) => {
         console.log(result);
+        navigate(location?.state || "/");
       })
       .catch((error) => {
         console.log(error.message);

@@ -1,41 +1,9 @@
-import { useContext, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { BsArrowLeft } from "react-icons/bs";
 import { useLoaderData } from "react-router";
 import { Link } from "react-router";
 import { AuthContext } from "../../contexts/AuthContext";
-
-const defaultBids = [
-  {
-    _id: "6a1292353ae88862c761f001",
-    product: "6a1292353ae88862c761e2d0",
-    buyer_image: "https://i.pravatar.cc/150?u=1",
-    buyer_name: "Alice Smith",
-    buyer_contact: "+8801700000001",
-    buyer_email: "alice@example.com",
-    bid_price: 680,
-    status: "pending",
-  },
-  {
-    _id: "6a1292353ae88862c761f002",
-    product: "6a1292353ae88862c761e2d0",
-    buyer_image: "https://i.pravatar.cc/150?u=2",
-    buyer_name: "Karim Hossain",
-    buyer_contact: "+8801700000002",
-    buyer_email: "karim@example.com",
-    bid_price: 660,
-    status: "pending",
-  },
-  {
-    _id: "6a1292353ae88862c761f003",
-    product: "6a1292353ae88862c761e2d0",
-    buyer_image: "https://i.pravatar.cc/150?u=3",
-    buyer_name: "Nusrat Jahan",
-    buyer_contact: "+8801700000003",
-    buyer_email: "nusrat@example.com",
-    bid_price: 700,
-    status: "pending",
-  },
-];
+import Swal from "sweetalert2";
 
 const statusStyles = {
   pending: "bg-[#FFC107] text-white",
@@ -65,10 +33,11 @@ function formatDate(dateString) {
   });
 }
 
-export default function ProductDetailsPage({ bids = defaultBids }) {
+export default function ProductDetailsPage() {
   const product = useLoaderData();
   const bidModalRef = useRef();
   const { user } = useContext(AuthContext);
+  const [bids, setBids] = useState([]);
   // console.log(user)
 
   const {
@@ -90,13 +59,22 @@ export default function ProductDetailsPage({ bids = defaultBids }) {
   } = product;
   //   console.log(product);
 
+  useEffect(() => {
+    fetch(`http://localhost:3000/products/bids/${_id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("bids for this product", data);
+        setBids(data);
+      });
+  }, [_id]);
+
   const handleBidSubmit = (e) => {
     e.preventDefault();
     const name = e.target.name.value;
     const email = e.target.email.value;
     const bidAmount = e.target.bid.value;
     const contact = e.target.contact.value;
-    console.log(_id, name, email, bidAmount, contact);
+    // console.log(_id, name, email, bidAmount, contact);
 
     const newBid = {
       product: _id,
@@ -116,7 +94,29 @@ export default function ProductDetailsPage({ bids = defaultBids }) {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log("after placing bid", data);
+        // console.log("after placing bid", data);
+        if (data.insertedId) {
+          bidModalRef.current.close();
+          Swal.fire({
+            title: "Success!",
+            text: "You have successfully placed your bid.",
+            icon: "success",
+            confirmButtonText: "OK",
+          });
+          // add new bid to the sate
+          newBid._id = data.insertedId;
+          const newBids = [...bids, newBid].sort(
+            (a, b) => b.bid_price - a.bid_price,
+          );
+          setBids(newBids);
+        } else {
+          // Handle logic if the bid wasn't inserted
+          Swal.fire({
+            title: "Error!",
+            text: "Something went wrong while placing your bid.",
+            icon: "error",
+          });
+        }
       });
   };
 
@@ -300,7 +300,9 @@ export default function ProductDetailsPage({ bids = defaultBids }) {
                 <div className="modal-action">
                   <form method="dialog">
                     {/* if there is a button in form, it will close the modal */}
-                    <button className="btn">Close</button>
+                    <button className="btn text-gradient font-semibold border-primary">
+                      Cancel
+                    </button>
                   </form>
                 </div>
               </div>
@@ -311,7 +313,7 @@ export default function ProductDetailsPage({ bids = defaultBids }) {
         {/* Owner-only bids section */}
         <div className="mt-16">
           <div className="w-10 h-0.5 bg-violet-400 mb-3" />
-          <p className="text-4xl font-extrabold text-gray-200 select-none">
+          <p className="text-4xl font-extrabold text-gray-200 select-none mb-4">
             Only Visible to Owner
           </p>
           <h2 className="text-2xl font-extrabold text-slate-900 -mt-1">
@@ -321,16 +323,16 @@ export default function ProductDetailsPage({ bids = defaultBids }) {
             </span>
           </h2>
 
-          <div className="mt-6 bg-white rounded-xl shadow-sm overflow-hidden">
+          <div className="mt-6 bg-white rounded-lg shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm min-w-170">
                 <thead>
                   <tr className="text-left text-gray-500 border-b border-gray-100">
-                    <th className="px-6 py-4 font-medium">SL No</th>
-                    <th className="px-6 py-4 font-medium">Buyer</th>
-                    <th className="px-6 py-4 font-medium">Contact</th>
-                    <th className="px-6 py-4 font-medium">Bid Price</th>
-                    <th className="px-6 py-4 font-medium">Actions</th>
+                    <th className="px-5 py-5 font-medium">SL No</th>
+                    <th className="px-6 py-5 font-medium">Buyer</th>
+                    <th className="px-6 py-5 font-medium">Contact</th>
+                    <th className="px-6 py-5 font-medium">Bid Price</th>
+                    <th className="px-6 py-5 font-medium">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -343,11 +345,11 @@ export default function ProductDetailsPage({ bids = defaultBids }) {
                           : ""
                       }
                     >
-                      <td className="px-6 py-4 text-slate-700">{idx + 1}</td>
-                      <td className="px-6 py-4">
+                      <td className="px-5 py-5 text-slate-700">{idx + 1}</td>
+                      <td className="px-6  py-5">
                         <div className="flex items-center gap-3">
                           <img
-                            src={bid.buyer_image}
+                            src={"https://i.pravatar.cc/150?u=2"}
                             alt={bid.buyer_name}
                             className="w-9 h-9 rounded-full bg-gray-200 flex-shrink-0 object-cover"
                           />
@@ -361,13 +363,13 @@ export default function ProductDetailsPage({ bids = defaultBids }) {
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-slate-700">
+                      <td className="px-6 py-5 text-slate-700">
                         {bid.buyer_contact}
                       </td>
-                      <td className="px-6 py-4 text-slate-700 font-medium">
+                      <td className="px-6 py-5 text-slate-700 font-medium">
                         ${bid.bid_price}
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-5">
                         {bid.status === "pending" ? (
                           <div className="flex items-center gap-2">
                             <button className="text-xs font-medium text-green-600 border border-green-200 bg-green-50 rounded-full px-4 py-1.5 hover:bg-green-100 transition-colors">

@@ -13,14 +13,26 @@ import MyProducts from "./components/MyProducts/MyProducts.jsx";
 import MyBids from "./components/MyBids/MyBids.jsx";
 import Login from "./components/Login/Login.jsx";
 import ProductDetails from "./components/ProductDetails/ProductDetails.jsx";
+import CreateProduct from "./components/CreateProduct/CreateProduct.jsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <RootLayout />,
+    hydrateFallbackElement: (
+      <div className="flex justify-center items-center h-screen text-4xl font-bold">
+        L(
+        <span className="inline-block text-primary animate-spin">O</span>
+        )ADING...
+      </div>
+    ),
     children: [
       { index: true, element: <Home /> },
-      { path: "/allProducts", element: <AllProducts /> },
+      {
+        path: "/allProducts",
+        element: <AllProducts />,
+        loader: () => fetch("http://localhost:3000/products"),
+      },
       { path: "/login", element: <Login /> },
       { path: "/register", element: <Register /> },
       {
@@ -44,6 +56,14 @@ const router = createBrowserRouter([
         loader: ({ params }) =>
           fetch(`http://localhost:3000/products/${params.id}`),
         element: <ProductDetails />,
+      },
+      {
+        path: "/createProduct",
+        element: (
+          <PrivateRoute>
+            <CreateProduct />
+          </PrivateRoute>
+        ),
       },
     ],
   },

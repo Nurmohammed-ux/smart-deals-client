@@ -1,11 +1,13 @@
 import { useContext, useState } from "react";
-import { Link } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { AuthContext } from "../../contexts/AuthContext";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Register = () => {
   const { createUser, signInWithGoogle } = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();6
 
   const handleCreateUser = (e) => {
     e.preventDefault();
@@ -36,6 +38,7 @@ const Register = () => {
           .then((data) => {
             console.log("data after user save", data);
           });
+          navigate(location?.state || "/");
       })
       .catch((error) => {
         console.log(error.message);
@@ -64,6 +67,7 @@ const Register = () => {
           .then((data) => {
             console.log("data after user save", data);
           });
+          navigate(location?.state || "/");
       })
       .catch((error) => {
         console.log(error.message);
