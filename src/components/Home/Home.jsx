@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import Hero from "../Hero/Hero";
 import LatestProducts from "../LatestProducts/LatestProducts";
 import { Link } from "react-router";
-import Footer from "../Footer/Footer";
 
 const latestProductsPromise = fetch(
   "http://localhost:3000/latest-products",
@@ -26,7 +25,6 @@ const Home = () => {
           View All
         </Link>
       </div>
-      <Footer />
     </div>
   );
 };

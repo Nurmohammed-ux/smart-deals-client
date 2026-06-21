@@ -1,6 +1,7 @@
 import { FaSearch } from "react-icons/fa";
 import bgLeft from "../../assets/bg-hero-left.png";
 import bgRight from "../../assets/bg-hero-right.png";
+import { Link } from "react-router"
 
 const Hero = () => {
   return (
@@ -43,12 +44,12 @@ const Hero = () => {
 
         {/* Action Buttons */}
         <div className="flex gap-4 justify-center">
-          <button className="btn bg-primary-gradient text-base font-semibold px-6 border-none text-white">
+          <Link to={"/allProducts"} className="btn bg-primary-gradient text-base font-semibold px-6 border-none text-white">
             Watch All Products
-          </button>
-          <button className="btn bg-white border-primary font-semibold px-6 text-base">
+          </Link>
+          <Link to={"/createProduct"} className="btn border-primary font-semibold px-6 text-base">
             <span className="text-gradient">Post an Product</span>
-          </button>
+          </Link>
         </div>
       </div>
     </section>
