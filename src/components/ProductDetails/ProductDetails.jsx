@@ -36,9 +36,9 @@ function formatDate(dateString) {
 export default function ProductDetailsPage() {
   const product = useLoaderData();
   const bidModalRef = useRef();
-  const { user } = useContext(AuthContext);
+  const { user, loading } = useContext(AuthContext);
   const [bids, setBids] = useState([]);
-  // console.log(user)
+  // console.log(user);
 
   const {
     _id,
@@ -60,13 +60,32 @@ export default function ProductDetailsPage() {
   //   console.log(product);
 
   useEffect(() => {
-    fetch(`http://localhost:3000/products/bids/${_id}`)
+    if (loading || !user || !user.accessToken) {
+      return;
+    }
+
+    fetch(`http://localhost:3000/products/bids/${_id}`, {
+      headers: {
+        authorization: `Bearer ${user.accessToken}`,
+      },
+    })
       .then((res) => res.json())
       .then((data) => {
-        console.log("bids for this product", data);
+        // console.log("bids for this product", data);
         setBids(data);
       });
-  }, [_id]);
+  }, [user, _id, loading]);
+
+  if (loading) {
+    return <div className="text-center py-20">Loading authentication...</div>;
+  }
+
+  // 2. PLACE AUTH GUARD HERE (Optional but recommended)
+  if (!user) {
+    return (
+      <div className="text-center py-20">Please log in to view details.</div>
+    );
+  }
 
   const handleBidSubmit = (e) => {
     e.preventDefault();

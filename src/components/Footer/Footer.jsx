@@ -79,7 +79,7 @@ const Footer = () => {
         </div>
         <div className="flex flex-col gap-3 lg:ml-6">
           <h4 className="text-lg font-semibold">Social Links</h4>
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             {[
               { icon: RiTwitterXFill, color: "text-black" },
               { icon: CiLinkedin, color: "text-blue-700" },

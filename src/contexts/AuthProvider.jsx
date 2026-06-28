@@ -30,15 +30,30 @@ const AuthProvider = ({ children }) => {
     setLoading(true);
     return signInWithPopup(auth, googleProvider);
   };
-  
+
   const logOut = () => {
     setLoading(true);
     return signOut(auth);
-  }
+  };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
+      if (currentUser) {
+        const loggedUser = { email: currentUser.email };
+        fetch("http://localhost:3000/getToken", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify(loggedUser),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            console.log("after getting token", data);
+            localStorage.setItem("token", data.token);
+          });
+      }
       setLoading(false);
     });
     return () => unsubscribe();

@@ -25,16 +25,38 @@ function StatusBadge({ status }) {
 const MyBids = () => {
   const { user } = useContext(AuthContext);
   const [myBids, setMyBids] = useState([]);
-  // console.log(user?.email);
+  // console.log(user?.accessToken);
 
+  //  With firebase
+  // useEffect(() => {
+  //   if (user?.email) {
+  //     fetch(`http://localhost:3000/bids?email=${user.email}`, {
+  //       headers: {
+  //         authorization: `Bearer ${user.accessToken}`,
+  //       },
+  //     })
+  //       .then((res) => res.json())
+  //       .then((data) => {
+  //         // console.log("loading my biding data :", data);
+  //         setMyBids(data);
+  //       });
+  //   }
+  // }, [user]);
   useEffect(() => {
     if (user?.email) {
-      fetch(`http://localhost:3000/bids?email=${user.email}`)
+      fetch(`http://localhost:3000/bids?email=${user.email}`, {
+        headers: {
+          authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
         .then((res) => res.json())
         .then((data) => {
-          console.log("loading my biding data :", data);
+          // console.log("loading my biding data :", data);
           setMyBids(data);
         });
+    }
+    else {
+      localStorage.removeItem('token');
     }
   }, [user]);
 
