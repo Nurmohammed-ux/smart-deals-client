@@ -4,6 +4,7 @@ import { useLoaderData } from "react-router";
 import { Link } from "react-router";
 import { AuthContext } from "../../contexts/AuthContext";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 const statusStyles = {
   pending: "bg-[#FFC107] text-white",
@@ -59,21 +60,33 @@ export default function ProductDetailsPage() {
   } = product;
   //   console.log(product);
 
+  // useEffect with fetch
+  // useEffect(() => {
+  //   if (loading || !user || !user.accessToken) {
+  //     return;
+  //   }
+
+  //   fetch(`http://localhost:3000/products/bids/${_id}`, {
+  //     headers: {
+  //       authorization: `Bearer ${user.accessToken}`,
+  //     },
+  //   })
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       // console.log("bids for this product", data);
+  //       setBids(data);
+  //     });
+  // }, [user, _id, loading]);
+
+  // useEffect with axios
   useEffect(() => {
     if (loading || !user || !user.accessToken) {
       return;
     }
-
-    fetch(`http://localhost:3000/products/bids/${_id}`, {
-      headers: {
-        authorization: `Bearer ${user.accessToken}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        // console.log("bids for this product", data);
-        setBids(data);
-      });
+    axios(`http://localhost:3000/products/bids/${_id}`).then((singleData) => {
+      console.log("after axios loading", singleData);
+      setBids(singleData.data);
+    });
   }, [user, _id, loading]);
 
   if (loading) {

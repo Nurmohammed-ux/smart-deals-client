@@ -3,7 +3,7 @@ import Product from "../Product/Product";
 
 const AllProducts = () => {
   const products = useLoaderData();
-  console.log(products);
+  // console.log(products);
   return (
     <div className="bg-[#F2F2F5]">
       <h1 className="text-4xl font-bold text-center pt-20 pb-10">
