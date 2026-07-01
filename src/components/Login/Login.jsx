@@ -14,7 +14,7 @@ const Login = () => {
     const form = e.target;
     const email = form.email.value;
     const password = form.password.value;
-    console.log(email, password);
+    // console.log(email, password);
 
     signInUser(email, password)
       .then((result) => {
@@ -26,8 +26,8 @@ const Login = () => {
 
   const handleSignInWithGoogle = () => {
     signInWithGoogle()
-      .then((result) => {
-        console.log(result);
+      .then(() => {
+        // console.log(result);
         navigate(location?.state || "/");
       })
       .catch((error) => {

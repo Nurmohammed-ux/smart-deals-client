@@ -89,7 +89,7 @@ export default function CreateProductPage() {
     // });
 
     axiosSecure.post("/products", productData).then((product) => {
-      console.log("after axios secure", product.data);
+      // console.log("after axios secure", product.data);
       if (product.data.insertedId) {
         Swal.fire({
           title: "Success!",

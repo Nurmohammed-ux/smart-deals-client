@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import Swal from "sweetalert2";
+import UseAxiosSecure from "../../hooks/useAxiosSecure";
 
 const statusStyles = {
   pending: "bg-[#FFC107] text-black",
@@ -25,6 +26,7 @@ function StatusBadge({ status }) {
 const MyBids = () => {
   const { user } = useContext(AuthContext);
   const [myBids, setMyBids] = useState([]);
+  const axiosSecure = UseAxiosSecure();
   // console.log(user?.accessToken);
 
   //  With firebase
@@ -42,23 +44,33 @@ const MyBids = () => {
   //       });
   //   }
   // }, [user]);
+
+  // with jwt
+  // useEffect(() => {
+  //   if (user?.email) {
+  //     fetch(`http://localhost:3000/bids?email=${user.email}`, {
+  //       headers: {
+  //         authorization: `Bearer ${localStorage.getItem("token")}`,
+  //       },
+  //     })
+  //       .then((res) => res.json())
+  //       .then((data) => {
+  //         // console.log("loading my biding data :", data);
+  //         setMyBids(data);
+  //       });
+  //   }
+  //   else {
+  //     localStorage.removeItem('token');
+  //   }
+  // }, [user]);
+
+  // with axios
   useEffect(() => {
-    if (user?.email) {
-      fetch(`http://localhost:3000/bids?email=${user.email}`, {
-        headers: {
-          authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          // console.log("loading my biding data :", data);
-          setMyBids(data);
-        });
-    }
-    else {
-      localStorage.removeItem('token');
-    }
-  }, [user]);
+    axiosSecure.get(`/bids?email=${user.email}`).then((productBid) => {
+      console.log("loading product bids", productBid.data);
+      setMyBids(productBid.data);
+    });
+  }, [user, axiosSecure]);
 
   const handleDeleteBid = (_id) => {
     Swal.fire({
